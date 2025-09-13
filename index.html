@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Don't copy it</title>
+  <style>
+    body{
+      font-family: sans-serif;
+      background:#0b1220;
+      color:#e6eef8;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
+    }
+    .card{
+      background:rgba(255,255,255,0.05);
+      padding:30px;
+      border-radius:12px;
+      max-width:600px;
+      text-align:center;
+      box-shadow:0 8px 25px rgba(0,0,0,0.5);
+    }
+    h1{margin-bottom:12px;}
+    .btn{
+      background:#22c55e;
+      border:none;
+      padding:10px 18px;
+      margin:8px;
+      border-radius:8px;
+      color:#fff;
+      font-size:15px;
+      cursor:pointer;
+      transition:transform .2s;
+    }
+    .btn:hover{ transform:scale(1.05); }
+
+    /* Custom alert */
+    .custom-alert{
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%) scale(0.7);
+      background:#111827;
+      color:#fff;
+      padding:20px 30px;
+      border-radius:12px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.7);
+      opacity:0;
+      visibility:hidden;
+      transition:all .3s ease;
+      z-index:9999;
+      text-align:center;
+    }
+    .custom-alert.show{
+      opacity:1;
+      visibility:visible;
+      transform:translate(-50%,-50%) scale(1);
+    }
+
+    /* Popup for paste */
+    .popup{
+      position:fixed;
+      top:0; left:0; right:0; bottom:0;
+      background:rgba(0,0,0,0.7);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      visibility:hidden;
+      opacity:0;
+      transition:opacity .3s ease;
+    }
+    .popup.active{
+      visibility:visible;
+      opacity:1;
+    }
+    .popup-content{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  font-size:100px;
+  animation: zoomIn .5s ease forwards;
+  color:#ff2e2e;
+  text-shadow:0 0 30px rgba(255,0,0,0.7);
+}
+
+.popup-content .text{
+  font-size:32px;
+  margin-top:10px;
+  color:#fff;
+  text-shadow:0 0 10px rgba(0,0,0,0.8);
+  font-weight:bold;
+}
+    @keyframes zoomIn {
+      0%{ transform:scale(0); opacity:0; }
+      100%{ transform:scale(1); opacity:1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Don't copy it</h1>
+    <p>
+      Agar aap is text ko copy karke paste karoge to ek special surprise milega try karo 😅 
+    </p>
+    <button class="btn" id="copyBtn">Copy Text</button>
+    <button class="btn" id="pasteBtn">Paste</button>
+  </div>
+
+  <!-- Custom Alert -->
+  <div id="customAlert" class="custom-alert">Copied! ✨<br>Now tap on Paste</div>
+
+<!-- Popup -->
+<div id="popup" class="popup">
+  <div class="popup-content">
+    <div class="emoji">🖕</div>
+    <div class="text">FUCK YOU</div>
+  </div>
+</div>
+
+  <script>
+    const copyBtn = document.getElementById("copyBtn");
+    const pasteBtn = document.getElementById("pasteBtn");
+    const popup = document.getElementById("popup");
+    const customAlert = document.getElementById("customAlert");
+
+    function showAlert(msg){
+      customAlert.innerHTML = msg;
+      customAlert.classList.add("show");
+      setTimeout(()=>customAlert.classList.remove("show"),2000);
+    }
+
+    // COPY button → universal (modern + fallback)
+    copyBtn.addEventListener("click", async () => {
+      const emoji = "🖕FUCK YOU MENE BOLA THA DON'T COPY IT";
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(emoji);
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.value = emoji;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
+        showAlert("Copied! ✨<br>Now tap on Paste");
+      } catch (err) {
+        console.error("Copy failed:", err);
+        showAlert("❌ Copy failed");
+      }
+    });
+
+    // PASTE button → fake popup (works everywhere)
+    pasteBtn.addEventListener("click", () => {
+      popup.classList.add("active");
+      setTimeout(() => popup.classList.remove("active"), 1500);
+    });
+
+    // Manual copy interception
+    document.addEventListener("copy", function(e){
+      e.preventDefault();
+      if (e.clipboardData) {
+        e.clipboardData.setData("text/plain", "🖕FUCK YOU MENE BOLA THA DON'T COPY IT");
+        e.clipboardData.setData("text/html", "🖕FUCK YOU MENE BOLA THA DON'T COPY IT");
+      } else if (window.clipboardData) {
+        window.clipboardData.setData("Text", "🖕FUCK YOU MENE BOLA THA DON'T COPY IT");
+      }
+    });
+  </script>
+</body>
+</html>
